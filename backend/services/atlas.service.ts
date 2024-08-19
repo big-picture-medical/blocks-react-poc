@@ -62,6 +62,12 @@ export const fetchBlockConfiguration = async (id: string, version: string) => {
   });
 };
 
+export const fetchTerminology = async (query = {}) => {
+  return await executeWorkflow('blocks-external-terminology-search', {
+    body: JSON.stringify(query)
+  });
+};
+
 export const fetchComposition = async (compositionId: string) => {
   return await executeWorkflow('blocks-get-ehr-composition', {
     body: JSON.stringify({ compositionId })

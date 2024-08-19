@@ -5,7 +5,8 @@ import {
   getBlockConfigurationsList,
   getBlockTemplates,
   submitComposition,
-  validateComposition
+  validateComposition,
+  fetchTerminology
 } from '../services/atlas.service';
 
 export const getBlockConfigurations = async (req: Request, res: Response) => {
@@ -41,6 +42,16 @@ export const createPatientInEhr = async (req: Request, res: Response) => {
 export const getBlockConfiguration = async (req: Request, res: Response) => {
   try {
     const result = JSON.parse(await fetchBlockConfiguration(req.body?.id, req.body?.version));
+    return res.status(result?.code ?? 200).send(result);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ message: 'Something went wrong' });
+  }
+};
+
+export const getTerminology = async (req: Request, res: Response) => {
+  try {
+    const result = JSON.parse(await fetchTerminology(req.query));
     return res.status(result?.code ?? 200).send(result);
   } catch (error) {
     console.log(error);
