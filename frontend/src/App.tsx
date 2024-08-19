@@ -40,27 +40,59 @@ function App() {
   const [blockTemplateKey, setBlockTemplateKey] = useState(null);
   const [blockConfigurationId, setBlockConfigurationId] = useState(null);
   const [blockConfigurations, setBlockConfigurations] = useState<BlockConfiguration[]>([]);
+  const patientId = '80d2d72b-4818-4325-9bdf-98011c7c6b20';
 
   useEffect(() => {
     const getBlockTemplates = async () => {
       const response = await fetch('http://localhost:4000/block-templates');
       const data = (await response.json())?.[0]?.data;
-      console.log(data);
       setBlockTemplates(Array.isArray(data) ? data : []);
     }
     getBlockTemplates();
   }, []);
 
-  const getBlockConfigurations = async () => {
-    console.log({
-      type: 'capture',
-      templateKey: blockTemplateKey
+  const initBlock = (id: string) => {
+    // Delete and recreate div
+    if (blockConfigurationId) {
+      const element = document.body.querySelector('#block');
+      const parent = document.getElementById('block-parent');
+      if (element && parent) {
+        element.remove();
+        const div = document.createElement("div");
+        div.id = 'block';
+        parent.appendChild(div);
+        element.innerHTML = '';
+      }
+    }
+    const selectedBlockConfiguration = blockConfigurations.find((config) => config.external_id === id);
+    const block = (window as any).BlockRendererWidget?.init('#block', {
+      apiUrl: 'http://localhost:4000',
+      blockConfigurationId: id,
+      patientId,
+      blockConfigurationVersion: selectedBlockConfiguration?.version,
+      blockTemplateId: blockTemplateKey,
+      composer: {
+        id: `blocks-test-page`,
+        id_scheme: 'UUID',
+        id_namespace: 'block-builder-test-page',
+        name: 'BlockBuilder TestPage',
+      },
+      onReady: () => console.log('mounted'),
+      onError: (e: any) => {
+        console.log(e);
+      }
     });
+  }
+
+  const getBlockConfigurations = async (templateKey: string) => {
     const response = await fetch('http://localhost:4000/block-configurations', {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({
         type: 'capture',
-        templateKey: blockTemplateKey
+        templateKey
       })
     });
     const data = await response.json();
@@ -69,11 +101,12 @@ function App() {
 
   const onBlockTemplateChange = async (event: SelectChangeEvent) => {
     await setBlockTemplateKey(event.target.value as string);
-    await getBlockConfigurations();
+    await getBlockConfigurations(event.target.value);
   };
 
   const onBlockConfigurationChange = async (event: SelectChangeEvent) => {
-    setBlockConfigurationId(event.target.value as string);
+    await setBlockConfigurationId(event.target.value as string);
+    await initBlock(event.target.value);
   };
 
   return (
@@ -104,17 +137,19 @@ function App() {
             onChange={onBlockConfigurationChange}
           >
             {blockConfigurations.map(b => (
-              <MenuItem value={b.id} key={b.id}>{b.name}</MenuItem>
+              <MenuItem value={b.external_id} key={b.id}>{b.name}</MenuItem>
             ))}
           </Select>
         </FormControl></>)
       }
       {blockConfigurationId && (<>
-        BLOCK GOES HERE
+        <div id="block-parent">
+          <div id="block"/>
+        </div>
       </>)
       }
     </>
   )
 }
 
-export default App
+export default App;
