@@ -1,5 +1,5 @@
 import express from 'express';
-import { all } from '../controllers/block.controller';
+import { all } from '../controllers/block-template.controller';
 
 const router = express.Router();
 router.get('/', all);
