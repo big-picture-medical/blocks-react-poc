@@ -89,8 +89,14 @@ It should return the response as a JSON object.
 
 #### Get composition
 
-In your API, you need to define a `GET /compositions?composition_id=id` endpoint with the composition_id in the query params.
-It should execute the `blocks-get-ehr-composition` Atlas workflow with the `compositionId`.
+In your API, you need to define a `GET /compositions` endpoint that supports the following queryParams:
+- `compositionId`
+- `compositionType`
+- `ehrId`
+- `templateId`
+
+It should execute the `blocks-get-ehr-composition` Atlas workflow sending in the request's body all the existent supported queryParams.
+
 It should return the response as a JSON object.
 
 ```ts
@@ -101,7 +107,7 @@ It should return the response as a JSON object.
     'Content-Type': 'application/json',
     Authorization: `Bearer ${access_token}`
   },
-  body: JSON.stringify({ compositionId })
+  body: JSON.stringify({ compositionId, compositionType, ehrId, templateId })
 }
 ```
 

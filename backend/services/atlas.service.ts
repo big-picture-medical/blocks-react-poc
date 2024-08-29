@@ -68,9 +68,9 @@ export const fetchTerminology = async (query = {}) => {
   });
 };
 
-export const fetchComposition = async (compositionId: string) => {
+export const fetchComposition = async (queryParams: any = {}) => {
   return await executeWorkflow('blocks-get-ehr-composition', {
-    body: JSON.stringify({ compositionId })
+    body: JSON.stringify(queryParams)
   });
 };
 
