@@ -50,6 +50,7 @@ function App() {
   const [compositionId, setCompositionId] = useState('');
   const [isSuccessNotificationDisplayed, setSuccessNotificationDisplay] = useState(false);
   const patientId = '80d2d72b-4818-4325-9bdf-98011c7c6b20';
+  const compositionType = 'event';
 
   useEffect(() => {
     const getBlockTemplates = async () => {
@@ -67,8 +68,8 @@ function App() {
       apiUrl: 'http://localhost:4000',
       blockConfigurationId: id,
       patientId,
+      compositionType,
       blockConfigurationVersion: selectedBlockConfiguration?.version,
-      blockTemplateId: blockTemplateKey,
       composer: {
         id: `blocks-test-page`,
         id_scheme: 'UUID',

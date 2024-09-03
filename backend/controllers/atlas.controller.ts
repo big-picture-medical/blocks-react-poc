@@ -81,7 +81,7 @@ export const validateBlockComposition = async (req: Request, res: Response) => {
 
 export const getComposition = async (req: Request, res: Response) => {
   try {
-    const result = JSON.parse(await fetchComposition(req.query.composition_id as string));
+    const result = JSON.parse(await fetchComposition(req.query));
     return res.status(result?.code ?? 200).send(result.data);
   } catch (error) {
     console.log(error);
